@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segurança Digital para Idosos</title>
+    <style>
+        :root {
+            --bg-color: #f7f6f9;
+            --header-bg: #e6e3ec;
+            --text-color: #220d3a;
+            --card-bg: #ffffff;
+            --card-border: #220d3a;
+            --btn-danger: #e63946;
+            --btn-danger-hover: #c92a37;
+            --accent-yellow: #ffdd00;
+            --accent-green: #2a9d8f;
+            --modal-fundo-bg: rgba(34, 13, 58, 0.75);
+            --modal-content-bg: #fffbf0;
+            --base-font-size: 18px;
+            --stroke-width: 3px;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1125;
+            --header-bg: #110a1a;
+            --text-color: #fffef0;
+            --card-bg: #281a3e;
+            --card-border: #fffef0;
+            --btn-danger: #ff5964;
+            --btn-danger-hover: #e04853;
+            --accent-yellow: #fffef0;
+            --accent-green: #48cae4;
+            --modal-fundo-bg: rgba(10, 5, 18, 0.85);
+            --modal-content-bg: #2d1d45;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: var(--base-font-size);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            user-select: none;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .fixture-container {
+            position: fixed;
+            top: calc(-1 * var(--string-height, 300px) / 4);
+            right: 60px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            z-index: 1000;
+        }
+
+        .bulb-wrapper {
+            width: 140px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            margin-right: -10px;
+            transform: translateY(var(--base-offset, 75px));
+        }
+
+        .bulb-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: scale(1.15);
+            transition: transform 0.15s ease;
+        }
+
+        body:not(.dark-mode) .bulb-image {
+            transform: scale(1.18);
+        }
+
+        body.dark-mode .bulb-image {
+            transform: translateY(-20px) scale(1.10);
+        }
+
+        .pull-string-container {
+            cursor: grab;
+            touch-action: none;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(
+                calc(var(--base-offset, 75px) - var(--string-height, 300px) / 2)
+            );
+        }
+
+        .pull-string-container:active {
+            cursor: grabbing;
+        }
+
+        .string-image {
+            width: 45px;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            border-bottom: var(--stroke-width) solid var(--card-border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .menu-acessibilidade {
+            display: flex;
+            gap: 12px;
+        }
+
+        .menu-acessibilidade button {
+            font-size: 16px;
+            font-weight: 700;
+            padding: 10px 18px;
+            cursor: pointer;
+            border: var(--stroke-width) solid var(--card-border);
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .menu-acessibilidade button:hover {
+            transform: translateY(-2px);
+        }
+
+        .menu-acessibilidade button:active {
+            transform: translateY(2px) scale(0.96);
+        }
+
+        .recipiente {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 24px 80px 24px;
+        }
+
+        .banner, .card, .caixa-direitos, .secao-golpes, .secao-simulador, .secao-dicionario {
+            background-color: var(--card-bg);
+            border: var(--stroke-width) solid var(--card-border);
+            padding: 28px;
+            margin-bottom: 28px;
+            border-radius: 20px;
+            box-shadow: 0 6px 0px var(--card-border);
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .banner:hover, .card:hover, .caixa-direitos:hover, .secao-golpes:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0px var(--card-border);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .cards-dicas {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 220px;
+            margin-bottom: 0;
+        }
+
+        .icon-svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--text-color);
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+            transition: stroke 0.3s ease;
+        }
+
+        .botao-ajuda, .botao-fechar, .btn-acao {
+            background-color: var(--btn-danger);
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 800;
+            padding: 14px 28px;
+            border: var(--stroke-width) solid var(--card-border);
+            border-radius: 14px;
+            cursor: pointer;
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 0px var(--card-border);
+            transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.1s ease;
+        }
+
+        .botao-ajuda .icon-svg, .botao-fechar .icon-svg, .btn-acao .icon-svg {
+            stroke: #ffffff;
+        }
+
+        .botao-ajuda:hover, .botao-fechar:hover, .btn-acao:hover {
+            background-color: var(--btn-danger-hover);
+        }
+
+        .botao-ajuda:active, .botao-fechar:active, .btn-acao:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0px var(--card-border);
+        }
+
+        .simulador-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .mensagem-exemplo {
+            background-color: var(--bg-color);
+            border: 2px solid var(--card-border);
+            border-radius: 14px;
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+
+        .mensagem-exemplo:hover {
+            transform: scale(1.01);
+        }
+
+        .feedback-resultado {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 14px;
+            border: var(--stroke-width) solid var(--card-border);
+            font-weight: 700;
+            display: none;
+        }
+
+        .grid-dicionario {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .item-termo {
+            border: 2px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 14px;
+            background-color: var(--bg-color);
+        }
+
+        .item-termo strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--accent-green);
+        }
+
+        .modal-fundo {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-fundo-bg);
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-conteudo {
+            background-color: var(--modal-content-bg);
+            color: var(--text-color);
+            padding: 32px;
+            border-radius: 20px;
+            border: calc(var(--stroke-width) + 1px) solid var(--card-border);
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            width: 580px;
+            margin: 0 !important;
+            box-shadow: 0 12px 0px var(--card-border);
+        }
+
+        .emergencia-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .card-emergencia {
+            border: var(--stroke-width) solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            background-color: var(--card-bg);
+            font-weight: 800;
+        }
+
+        ol {
+            padding-left: 24px;
+        }
+
+        ol li {
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fixture-container">
+        <div class="bulb-wrapper">
+            <img
+                id="bulbImg"
+                src="https://cdn.phototourl.com/free/2026-08-10-03ae4258-38a6-4bcc-9344-f00a4174250e.png"
+                alt="Light Bulb"
+                class="bulb-image"
+                draggable="false"
+            >
+        </div>
+
+        <div class="pull-string-container" id="pullTrigger">
+            <img
+                id="stringImg"
+                src="https://cdn.phototourl.com/free/2026-08-10-b678e004-2404-401b-ac13-c2d5bc4fbdb9.png"
+                alt="Pull String"
+                class="string-image"
+                draggable="false"
+            >
+        </div>
+    </div>
+
+    <header>
+        <div class="menu-acessibilidade">
+            <button id="btn-a-mais">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                A+
+            </button>
+            <button id="btn-a-menos">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+                A-
+            </button>
+            <button id="btn-leitura">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07"/></svg>
+                Ouvir Página
+            </button>
+        </div>
+    </header>
+
+    <main class="recipiente">
+        
+        <section class="banner">
+            <div class="card-header">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <h1>Segurança Digital para a Terceira Idade</h1>
+            </div>
+            <p>Aprenda a navegar na internet de forma simples, prática e segura.</p>
+            <button class="botao-ajuda">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+                Preciso de Ajuda Agora
+            </button>
+        </section>
+
+        <section class="secao-dicas">
+            <div class="card-header" style="margin-bottom: 20px;">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                <h2>Dicas Importantes</h2>
+            </div>
+            <div class="cards-dicas">
+                <article class="card">
+                    <div class="card-header">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        <h3>1. Senhas</h3>
+                    </div>
+                    <p>Não use datas de nascimento ou nomes de parentes como senha.</p>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        <h3>2. Links</h3>
+                    </div>
+                    <p>Nunca clique em links recebidos por mensagem de desconhecidos.</p>
+                </article>
+
+                <article class="card">
+                    <div class="card-header">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                        <h3>3. Ofertas</h3>
+                    </div>
+                    <p>Se algo parecer urgente demais ou muito vantajoso, pode ser golpe.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="secao-simulador">
+            <div class="card-header">
+                <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <h2>Teste: Esta mensagem é um golpe?</h2>
+            </div>
+            <p>Clique em um exemplo abaixo para aprender a identificar suspeitas:</p>
+            
+            <div class="simulador-box">
+                <div class="mensagem-exemplo" onclick="verificarGolpe(true, '🚨 GOLPE! Bancos nunca enviam links urgentes pedindo atualizações de conta pelo WhatsApp.')">
+                    <span>"Seu banco: Conta bloqueada! Clique no link urgente para recadastrar."</span>
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <div class="mensagem-exemplo" onclick="verificarGolpe(false, '✅ SEGURO! Mensagens carinhosas de parentes sem pedir transferências financeiras são normais.')">
+                    <span>"Oi Vovó! Tudo bem com você? Passando pra mandar um abraço."</span>
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <div class="mensagem-exemplo" onclick="verificarGolpe(true, '🚨 GOLPE! Se um familiar pedir dinheiro urgentemente com número novo, ligue no número antigo para confirmar.')">
+                    <span>"Mudei de número! Preciso que você pague uma conta urgente pra mim via PIX."</span>
+                    <svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </div>
+
+            <div id="resultadoSimulador" class="feedback-resultado"></div>
+        </section>
+
+        <section class="caixa-direitos">
+            <div class="card-header">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <h2>Direitos na Internet</h2>
+            </div>
+            <p>Sua privacidade e segurança são garantidas por leis como o Marco Civil da Internet e a LGPD. Você tem o direito de navegar em segurança e ter seus dados protegidos.</p>
+        </section>
+
+        <section class="secao-golpes">
+            <div class="card-header">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <h2>Como saber se estou caindo em um golpe?</h2>
+            </div>
+            <p>Fique atento a mensagens de urgência solicitando dinheiro, pedidos de dados pessoais por telefone ou links suspeitos enviados por aplicativos de mensagem.</p>
+        </section>
+
+        <section class="secao-dicionario">
+            <div class="card-header">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                <h2>Dicionário Digital Simples</h2>
+            </div>
+            <div class="grid-dicionario">
+                <div class="item-termo">
+                    <strong>PIX</strong>
+                    <span>Transferência de dinheiro instantânea. Só envie para quem você conhece!</span>
+                </div>
+                <div class="item-termo">
+                    <strong>Download</strong>
+                    <span>Baixar ou salvar um arquivo ou aplicativo da internet para seu celular.</span>
+                </div>
+                <div class="item-termo">
+                    <strong>Phishing (Golpe)</strong>
+                    <span>Mensagem falsa tentando enganar você para roubar senhas e cartão.</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-fundo">
+        <section id="contato-ajuda" class="modal-conteudo">
+            <div class="card-header">
+                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                <h2>O que fazer agora?</h2>
+            </div>
+            <p>Se você acha que caiu em um golpe ou está com medo de uma mensagem:</p>
+            
+            <div class="emergencia-grid">
+                <div class="card-emergencia">📞 190<br><small>Polícia</small></div>
+                <div class="card-emergencia">🏦 BANCO<br><small>Cartão</small></div>
+                <div class="card-emergencia">👥 FAMÍLIA<br><small>Ajuda</small></div>
+            </div>
+
+            <ol>
+                <li><strong>Pare tudo o que está fazendo.</strong></li>
+                <li><strong>Ligue para um filho, neto ou amigo próximo.</strong></li>
+                <li><strong>Ligue para o seu banco</strong> usando o número que está atrás do seu cartão.</li>
+                <li><strong>Registre um Boletim de Ocorrência</strong> na delegacia mais próxima ou pela internet.</li>
+            </ol>
+            
+            <button class="botao-fechar">
+                <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Fechar
+            </button>
+        </section>
+    </div>
+
+    <script>
+        const btnAjuda = document.querySelector(".botao-ajuda");
+        const btnFechar = document.querySelector(".botao-fechar");
+        const modal = document.querySelector(".modal-fundo");
+
+        btnAjuda.addEventListener("click", abreModal);
+        btnFechar.addEventListener("click", fechaModal);
+
+        function abreModal() {
+            modal.style.display = "block";
+        }
+
+        function fechaModal() {
+            modal.style.display = "none";
+        }
+
+        function verificarGolpe(isGolpe, mensagem) {
+            const res = document.getElementById('resultadoSimulador');
+            res.style.display = 'block';
+            res.innerText = mensagem;
+            if (isGolpe) {
+                res.style.backgroundColor = 'rgba(230, 57, 70, 0.15)';
+                res.style.borderColor = 'var(--btn-danger)';
+            } else {
+                res.style.backgroundColor = 'rgba(42, 157, 143, 0.15)';
+                res.style.borderColor = 'var(--accent-green)';
+            }
+        }
+
+        let currentFontSize = 18;
+        document.getElementById('btn-a-mais').addEventListener('click', () => {
+            currentFontSize += 2;
+            document.documentElement.style.setProperty('--base-font-size', currentFontSize + 'px');
+        });
+
+        document.getElementById('btn-a-menos').addEventListener('click', () => {
+            if (currentFontSize > 12) {
+                currentFontSize -= 2;
+                document.documentElement.style.setProperty('--base-font-size', currentFontSize + 'px');
+            }
+        });
+
+        document.getElementById('btn-leitura').addEventListener('click', () => {
+            const textToRead = document.querySelector('.recipiente').innerText;
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = 'pt-BR';
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        });
+
+        const soundPath = "light-switch.mp3"; 
+        const lampAudio = new Audio(soundPath);
+
+        function playLampSound() {
+            lampAudio.currentTime = 0;
+            lampAudio.play().catch(e => {
+                console.log("Audio waiting for user gesture:", e);
+            });
+        }
+
+        const body = document.body;
+        const pullTrigger = document.getElementById('pullTrigger');
+        const bulbImg = document.getElementById('bulbImg');
+        const stringImg = document.getElementById('stringImg');
+        const root = document.documentElement;
+
+        const images = {
+            dark: {
+                bulb: "https://cdn.phototourl.com/free/2026-08-10-4279e6cd-b32e-4fcc-95fe-15561fae06c5.png",
+                string: "https://cdn.phototourl.com/free/2026-08-10-a7cdd1a9-0567-4d64-bd39-1923e9570f4f.png"
+            },
+            light: {
+                bulb: "https://cdn.phototourl.com/free/2026-08-10-03ae4258-38a6-4bcc-9344-f00a4174250e.png",
+                string: "https://cdn.phototourl.com/free/2026-08-10-b678e004-2404-401b-ac13-c2d5bc4fbdb9.png"
+            }
+        };
+
+        let isDragging = false;
+        let startY = 0;
+        let currentY = 0;
+        let stringHeight = 0;
+        let baseOffset = 0;
+        let pullThreshold = 0;
+
+        function getRestingOffset() {
+            return baseOffset - (stringHeight / 2);
+        }
+
+        function measureAndSetVars() {
+            stringHeight = stringImg.getBoundingClientRect().height || stringImg.offsetHeight || 300;
+            root.style.setProperty('--string-height', `${stringHeight}px`);
+
+            baseOffset = stringHeight / 4;
+            root.style.setProperty('--base-offset', `${baseOffset}px`);
+
+            pullThreshold = stringHeight / 2;
+
+            if (!isDragging) {
+                pullTrigger.style.transform = `translateY(${getRestingOffset()}px)`;
+            }
+        }
+
+        function startDrag(y) {
+            isDragging = true;
+            startY = y;
+            currentY = 0;
+            pullTrigger.style.transition = 'none';
+        }
+
+        function moveDrag(y) {
+            if (!isDragging) return;
+            currentY = y - startY;
+
+            if (currentY < 0) currentY = 0;
+            const maxPull = pullThreshold + 25;
+            if (currentY > maxPull) currentY = maxPull;
+
+            pullTrigger.style.transform = `translateY(${getRestingOffset() + currentY}px)`;
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            pullTrigger.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            pullTrigger.style.transform = `translateY(${getRestingOffset()}px)`;
+
+            if (currentY >= pullThreshold) {
+                toggleTheme();
+            }
+
+            currentY = 0;
+        }
+
+        function toggleTheme() {
+            playLampSound();
+
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+
+            bulbImg.src = isDark ? images.dark.bulb : images.light.bulb;
+            stringImg.src = isDark ? images.dark.string : images.light.string;
+        }
+
+        pullTrigger.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            startDrag(e.clientY);
+        });
+
+        window.addEventListener('mousemove', function(e) {
+            moveDrag(e.clientY);
+        });
+
+        window.addEventListener('mouseup', function() {
+            endDrag();
+        });
+
+        pullTrigger.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            startDrag(e.touches[0].clientY);
+        }, { passive: false });
+
+        window.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            moveDrag(e.touches[0].clientY);
+        }, { passive: false });
+
+        window.addEventListener('touchend', function() {
+            endDrag();
+        });
+
+        window.addEventListener('load', measureAndSetVars);
+        stringImg.addEventListener('load', measureAndSetVars);
+        window.addEventListener('resize', measureAndSetVars);
+        measureAndSetVars();
+    </script>
+</body>
+</html>
